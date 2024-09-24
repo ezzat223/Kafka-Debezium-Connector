@@ -1,5 +1,6 @@
 services:
   postgres:
+    # this Image is pre-configured for CDC purposes.
     image: debezium/example-postgres:1.9
     container_name: postgres
     ports:
@@ -15,18 +16,21 @@ services:
 # 5. pgAdmin/DBeaver --> local system
 # 6. Postman --> local system
 
-# Zookeeper, single node
+  # Zookeeper, single node
+  # a Service that Kafka uses to manage its Cluster State.
   zookeeper:
     image: wurstmeister/zookeeper:latest
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - 2181:2181
+      # For Client Communication
+      - 2181:2181     
+      # For Inter-node Communication
       - 2888:2888
       - 3888:3888
 
-  # kafka multi node     
+  # kafka multi node Brokers    
   kafka1:
     image: wurstmeister/kafka:latest
     restart: "no"
@@ -71,7 +75,7 @@ services:
       - kafka2
   
 
-  # debezium connector
+  # debezium connector (Kafka Connect)
   kconnect:
     image: debezium/connect:1.9
     ports:
